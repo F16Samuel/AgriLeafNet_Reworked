@@ -1,0 +1,2 @@
+Run Tests With:
+pytest tests/ --tb=short -v
