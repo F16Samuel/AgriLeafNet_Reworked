@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
 import seaborn as sns
 import os
+import tensorflow as tf
 
 def extract_features(model, dataset):
     feature_model = tf.keras.models.Model(

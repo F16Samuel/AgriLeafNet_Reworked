@@ -2,7 +2,6 @@
 
 import albumentations as A
 from albumentations.core.composition import OneOf
-from albumentations.tensorflow import ToTensorV2
 import tensorflow as tf
 import numpy as np
 
@@ -15,7 +14,8 @@ def get_augmentations(image_size=(224, 224)):
             A.RandomBrightnessContrast(),
             A.HueSaturationValue(),
         ], p=0.3),
-        A.Normalize(),
+        A.Normalize(mean=(0.485, 0.456, 0.406),
+                    std=(0.229, 0.224, 0.225)),
     ])
 
 def albumentations_preprocess_fn(augmentation):
@@ -23,9 +23,9 @@ def albumentations_preprocess_fn(augmentation):
         def aug_fn(img):
             img = img.numpy()
             augmented = augmentation(image=img)["image"]
-            return augmented
+            return augmented.astype(np.float32)
 
-        image = tf.py_function(func=aug_fn, inp=[image], Tout=tf.float32)
+        image = tf.numpy_function(func=aug_fn, inp=[image], Tout=tf.float32)
         image.set_shape([224, 224, 3])
         return image, label
     return wrap
