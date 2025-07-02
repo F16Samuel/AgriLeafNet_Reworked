@@ -19,12 +19,16 @@ def train(config_path="configs/train_config.yaml"):
     logger = get_logger()
 
     train_ds, val_ds, class_names = prepare_data(config)
-    model = build_agrileafnet(input_shape=tuple(config["data"]["image_size"]) + [3], num_classes=len(class_names))
+    model = build_agrileafnet(input_shape=tuple(config["data"]["image_size"]) + (3,), num_classes=len(class_names))
 
     loss_fn = get_loss()
-    optimizer = tf.keras.optimizers.experimental.AdamW(
-        learning_rate=config["training"]["learning_rate"],
-        weight_decay=config["training"]["weight_decay"]
+
+    learning_rate = float(config["training"]["learning_rate"])
+    weight_decay = float(config["training"]["weight_decay"])
+
+    optimizer = tf.keras.optimizers.AdamW(
+        learning_rate=learning_rate,
+        weight_decay=weight_decay
     )
 
     model.compile(optimizer=optimizer, loss=loss_fn, metrics=["accuracy"])
@@ -47,7 +51,7 @@ def train(config_path="configs/train_config.yaml"):
 
     if config["training"]["scheduler"] == "cosine_annealing":
         callbacks.append(CosineAnnealingScheduler(
-            initial_lr=config["training"]["learning_rate"],
+            initial_lr=learning_rate,
             t_max=10,
             eta_min=1e-6,
             restart_mult=2
@@ -57,7 +61,8 @@ def train(config_path="configs/train_config.yaml"):
         train_ds,
         validation_data=val_ds,
         epochs=config["training"]["epochs"],
-        callbacks=callbacks
+        callbacks=callbacks,
+        steps_per_epoch=1250
     )
 
     return model, history

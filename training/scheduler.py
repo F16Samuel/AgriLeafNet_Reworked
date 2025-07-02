@@ -17,7 +17,7 @@ class CosineAnnealingScheduler(Callback):
     def on_epoch_begin(self, epoch, logs=None):
         lr = self.eta_min + (self.initial_lr - self.eta_min) * (
             1 + math.cos(math.pi * self.epoch_since_restart / self.current_t_max)) / 2
-        tf.keras.backend.set_value(self.model.optimizer.lr, lr)
+        self.model.optimizer.learning_rate = lr
 
     def on_epoch_end(self, epoch, logs=None):
         self.epoch_since_restart += 1

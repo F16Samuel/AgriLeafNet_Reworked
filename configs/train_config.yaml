@@ -5,7 +5,7 @@ seed: 42
 data:
   dataset_path: "data/PlantVillage"
   image_size: [224, 224]
-  batch_size: 512
+  batch_size: 32
   val_split: 0.2
   num_classes: 15
 

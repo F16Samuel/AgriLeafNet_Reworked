@@ -3,7 +3,6 @@
 import tensorflow as tf
 from tensorflow.keras import layers, models, regularizers
 
-
 class FeatureHead(tf.keras.layers.Layer):
     def __init__(self, units, activation="relu", dropout_rate=0.3, name="feature_head"):
         super().__init__(name=name)

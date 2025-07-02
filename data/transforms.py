@@ -5,23 +5,35 @@ from albumentations.core.composition import OneOf
 import tensorflow as tf
 import numpy as np
 
-def get_augmentations(image_size=(224, 224)):
-    return A.Compose([
-        A.RandomResizedCrop(height=image_size[0], width=image_size[1]),
-        A.HorizontalFlip(p=0.5),
-        A.VerticalFlip(p=0.2),
-        OneOf([
-            A.RandomBrightnessContrast(),
-            A.HueSaturationValue(),
-        ], p=0.3),
-        A.Normalize(mean=(0.485, 0.456, 0.406),
-                    std=(0.229, 0.224, 0.225)),
-    ])
+def get_augmentations(image_size=(224, 224), is_train=True):
+    """
+    Returns an Albumentations Compose object based on mode.
+    """
+    if is_train:
+        return A.Compose([
+            A.RandomResizedCrop(size=image_size),
+            A.HorizontalFlip(p=0.5),
+            A.VerticalFlip(p=0.2),
+            OneOf([
+                A.RandomBrightnessContrast(),
+                A.HueSaturationValue(),
+            ], p=0.3),
+            A.Normalize(mean=(0.485, 0.456, 0.406),
+                        std=(0.229, 0.224, 0.225)),
+        ])
+    else:
+        return A.Compose([
+            A.Resize(*image_size),
+            A.Normalize(mean=(0.485, 0.456, 0.406),
+                        std=(0.229, 0.224, 0.225)),
+        ])
 
 def albumentations_preprocess_fn(augmentation):
+    """
+    Returns a tf.data-compatible wrapper that applies Albumentations to each image.
+    """
     def wrap(image, label):
         def aug_fn(img):
-            img = img.numpy()
             augmented = augmentation(image=img)["image"]
             return augmented.astype(np.float32)
 

@@ -67,6 +67,7 @@ def main():
         class_index = np.argmax(preds)
         confidence = preds[class_index] * 100
         print(f"🌱 Predicted Class Index: {class_index} — Confidence: {confidence:.2f}%")
-        
+
 if __name__ == "__main__":
+    os.environ['TF_DATA_AUTOTUNE_RAM'] = str(6 * 1024 * 1024 * 1024)  # 6GB in bytes
     main()

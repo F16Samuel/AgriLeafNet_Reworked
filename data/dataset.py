@@ -28,7 +28,7 @@ def load_dataset(data_dir, image_size=(224, 224), batch_size=32, val_split=0.2, 
     class_names = train_ds.class_names
 
     def preprocess(image, label):
-        image = tf.cast(image, tf.float32) / 255.0
+        image = tf.cast(image, tf.uint8)  # preserve original dtype for Albumentations
         return image, tf.one_hot(label, depth=len(class_names))
 
     train_ds = train_ds.map(preprocess, num_parallel_calls=AUTOTUNE).prefetch(AUTOTUNE)
