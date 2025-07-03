@@ -78,4 +78,4 @@ docker run --gpus all -v $PWD:/app agrileafnet
 
 ## 📄 License
 
-MIT License.
+Apache License 2.0.
