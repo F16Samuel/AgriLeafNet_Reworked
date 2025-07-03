@@ -1,15 +1,22 @@
 # training/train.py
 
 import os
+import json
 import yaml
 import tensorflow as tf
+
 from models.agrileafnet import build_agrileafnet
 from data.loader import prepare_data
+
 from training.scheduler import CosineAnnealingScheduler
 from training.early_stopping import CustomEarlyStopping
 from training.losses import get_loss
+
 from utils.seed import set_global_seed
 from utils.logger import get_logger
+
+from training.plot_mets import StepwiseMetricsLogger, plot_metrics
+from tensorflow.keras.callbacks import CSVLogger, TensorBoard, ModelCheckpoint
 
 def train(config_path="configs/train_config.yaml"):
     with open(config_path, "r") as f:
@@ -57,12 +64,28 @@ def train(config_path="configs/train_config.yaml"):
             restart_mult=2
         ))
 
+    # Custom: CSV logs, per-step logging, and visualization
+    callbacks.append(CSVLogger(
+        os.path.join(config["training"]["log_dir"], "training_log.csv"),
+        separator=",", append=True
+    ))
+    callbacks.append(StepwiseMetricsLogger())
+
+
     history = model.fit(
         train_ds,
         validation_data=val_ds,
         epochs=config["training"]["epochs"],
         callbacks=callbacks,
-        steps_per_epoch=1250
+        steps_per_epoch=500,
+        verbose=1
     )
+
+    # Save full history
+    with open("training_history.json", "w") as f:
+        json.dump(history.history, f)
+
+    # Save plots
+    plot_metrics(history)
 
     return model, history

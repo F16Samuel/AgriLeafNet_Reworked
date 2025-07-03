@@ -4,13 +4,13 @@ seed: 42
 
 data:
   dataset_path: "data/PlantVillage"
-  image_size: [224, 224]
+  image_size: [160, 160]
   batch_size: 32
-  val_split: 0.2
+  val_split: 0.3
   num_classes: 15
 
 training:
-  epochs: 100
+  epochs: 50
   optimizer: AdamW
   learning_rate: 0.0003
   weight_decay: 1e-4

@@ -5,7 +5,7 @@ from albumentations.core.composition import OneOf
 import tensorflow as tf
 import numpy as np
 
-def get_augmentations(image_size=(224, 224), is_train=True):
+def get_augmentations(image_size=(160, 160), is_train=True):
     """
     Returns an Albumentations Compose object based on mode.
     """
@@ -38,6 +38,6 @@ def albumentations_preprocess_fn(augmentation):
             return augmented.astype(np.float32)
 
         image = tf.numpy_function(func=aug_fn, inp=[image], Tout=tf.float32)
-        image.set_shape([224, 224, 3])
+        image.set_shape([160, 160, 3])
         return image, label
     return wrap

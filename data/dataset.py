@@ -4,7 +4,7 @@ import tensorflow as tf
 import os
 from glob import glob
 
-def load_dataset(data_dir, image_size=(224, 224), batch_size=32, val_split=0.2, seed=42):
+def load_dataset(data_dir, image_size=(160, 160), batch_size=32, val_split=0.3, seed=42):
     AUTOTUNE = tf.data.AUTOTUNE
 
     train_ds = tf.keras.utils.image_dataset_from_directory(

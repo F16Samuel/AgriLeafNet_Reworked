@@ -1,11 +1,13 @@
 # models/agrileafnet.py
 
 import tensorflow as tf
-from tensorflow.keras import layers, models
+from tensorflow.keras import layers, models, mixed_precision
 from models.custom_layers import FeatureHead, ResidualBlock
 from models.lora_utils import LoRAAdapter
 
 def build_agrileafnet(input_shape=(224, 224, 3), num_classes=15, lora_rank=4):
+    mixed_precision.set_global_policy("mixed_float16")
+
     base_model = tf.keras.applications.ResNet50(
         include_top=False, weights="imagenet", input_shape=input_shape, pooling='avg'
     )
@@ -26,6 +28,6 @@ def build_agrileafnet(input_shape=(224, 224, 3), num_classes=15, lora_rank=4):
     skip = layers.Dense(128)(x)
     x = layers.Concatenate()([x, skip])
 
-    outputs = layers.Dense(num_classes, activation='softmax')(x)
+    outputs = layers.Dense(num_classes, activation='softmax', dtype='float32')(x)
 
     return models.Model(inputs, outputs, name="AgriLeafNet")
